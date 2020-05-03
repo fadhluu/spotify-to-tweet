@@ -63,8 +63,10 @@ class Client(object):
             artist: current artist
         """
 
+        track_info = {}
+
         current_playback = self.currently_playing()
-        track_name = current_playback["item"]["name"]
+        track_info['name'] = current_playback["item"]["name"]
         artists = current_playback["item"]["artists"]
         list_artist = []
 
@@ -73,8 +75,16 @@ class Client(object):
 
         artists = ', '
         artists = artists.join(list_artist)
+        track_info['artists'] = artists
 
-        return track_name, artists
+        context = self.get_context_info()
+
+        if context:
+            track_info['context'] = context
+        else:
+            track_info['context'] = None
+
+        return track_info
 
     def get_cover_art(self, quality="high"):
         """Download current playing cover art
@@ -102,3 +112,27 @@ class Client(object):
         except:
             os.mkdir("img")
             cover.save("img/cover_art.png")
+
+    def get_context_info(self):
+        current_playback = self.currently_playing()
+        context = current_playback['context']
+
+        if context == None:
+            return None
+
+        context_uri = current_playback['context']['uri']
+
+        if context['type'] == "playlist":
+            playlist = self.sp_client.playlist(
+                context_uri)
+            playlist_info = {"type": "📻 Playlist"}
+            playlist_info['name'] = playlist['name']
+            playlist_info['uri'] = playlist['external_urls']['spotify']
+            return playlist_info
+
+        elif context['type'] == "album":
+            album = self.sp_client.album(context_uri)
+            album_info = {"type": "📻 Album"}
+            album_info['name'] = album['name']
+            album_info['uri'] = album['external_urls']['spotify']
+            return album_info
