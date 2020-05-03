@@ -65,9 +65,16 @@ class Client(object):
 
         current_playback = self.currently_playing()
         track_name = current_playback["item"]["name"]
-        artist = current_playback["item"]["artists"][0]["name"]
+        artists = current_playback["item"]["artists"]
+        list_artist = []
 
-        return track_name, artist
+        for artist in artists:
+            list_artist.append(artist['name'])
+
+        artists = ', '
+        artists = artists.join(list_artist)
+
+        return track_name, artists
 
     def get_cover_art(self, quality="high"):
         """Download current playing cover art
