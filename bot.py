@@ -17,6 +17,6 @@ class Twitter:
         return self.auth
 
     def post_tweet(self, text, file_location):
-        text = f"I'm currently listening to:\n" + text
+        text = f"🎵 Listening to:\n{text}"
         self.api.update_with_media(filename=file_location, status=text)
-        print(f"Success tweeting: {text}")
+        print(f"Success tweeting:\n{text}")
